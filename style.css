@@ -85,8 +85,26 @@ html,body{height:100%;margin:0;background:radial-gradient(1200px 600px at 10% 20
 .coin-btn{padding:8px 12px;background:transparent;border:0;color:var(--muted);cursor:pointer}
 .coin-btn.active{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));color:var(--primary);font-weight:700}
 .actions{margin-top:16px;display:flex;gap:12px;justify-content:center}
-.primary{background:linear-gradient(90deg,#fff,#eee);color:#0b1220;padding:12px 18px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+.primary{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));color:var(--primary);padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);font-weight:800;cursor:pointer}
 .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 14px;border-radius:10px;cursor:pointer}
+
+/* Normalize form controls to dark theme */
+button, input[type="number"], select {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.04);
+    color: var(--primary);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+/* Remove default white focus for buttons in some browsers */
+button:focus, input:focus, select:focus{ outline: none; box-shadow: 0 6px 24px rgba(2,6,12,0.6) inset }
+
+/* smaller buttons inside shop items */
+.shop-item button{background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); color:var(--primary)}
 .message{margin-top:12px;color:var(--muted)}
 .help{margin-top:18px;color:var(--muted)}
 
