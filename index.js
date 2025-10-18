@@ -219,8 +219,11 @@ const guessInput = document.getElementById('guessInput');
 const guessPlay = document.getElementById('guessPlay');
 const guessResult = document.getElementById('guessResult');
 
-if(guessBtn) guessBtn.addEventListener('click', ()=>{ guessPanel.classList.toggle('hidden'); statsPanel.classList.add('hidden'); });
-if(statsBtn) statsBtn.addEventListener('click', ()=>{ statsPanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); });
+function showPanel(panel){ if(!panel) return; panel.classList.remove('collapsed'); panel.classList.add('expanded'); panel.style.height = panel.scrollHeight + 'px'; }
+function hidePanel(panel){ if(!panel) return; panel.style.height = panel.scrollHeight + 'px'; requestAnimationFrame(()=>{ panel.classList.remove('expanded'); panel.classList.add('collapsed'); panel.style.height = '0px'; }); }
+
+if(guessBtn) guessBtn.addEventListener('click', ()=>{ if(guessPanel.classList.contains('expanded')) hidePanel(guessPanel); else { showPanel(guessPanel); hidePanel(statsPanel); hidePanel(shopPanel); hidePanel(roulettePanel); hidePanel(coinPanel); } });
+if(statsBtn) statsBtn.addEventListener('click', ()=>{ if(statsPanel.classList.contains('expanded')) hidePanel(statsPanel); else { showPanel(statsPanel); hidePanel(guessPanel); hidePanel(shopPanel); hidePanel(roulettePanel); hidePanel(coinPanel); } });
 
 if(guessPlay){
 	guessPlay.addEventListener('click', ()=>{
@@ -248,8 +251,8 @@ const gamesMenu = document.createElement('div');
 gamesMenu.style.marginTop = '8px';
 gamesMenu.innerHTML = `<button id="coinToggle" class="ghost">Coinflip</button> <button id="rouletteToggle" class="ghost">Roulette</button>`;
 document.querySelector('.toolbar').appendChild(gamesMenu);
-document.getElementById('coinToggle').addEventListener('click', ()=>{ coinPanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); statsPanel.classList.add('hidden'); shopPanel.classList.add('hidden'); });
-document.getElementById('rouletteToggle').addEventListener('click', ()=>{ roulettePanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); statsPanel.classList.add('hidden'); shopPanel.classList.add('hidden'); });
+document.getElementById('coinToggle').addEventListener('click', ()=>{ if(coinPanel.classList.contains('expanded')) hidePanel(coinPanel); else { showPanel(coinPanel); hidePanel(guessPanel); hidePanel(statsPanel); hidePanel(shopPanel); hidePanel(roulettePanel); } });
+document.getElementById('rouletteToggle').addEventListener('click', ()=>{ if(roulettePanel.classList.contains('expanded')) hidePanel(roulettePanel); else { showPanel(roulettePanel); hidePanel(guessPanel); hidePanel(statsPanel); hidePanel(shopPanel); hidePanel(coinPanel); } });
 
 if(coinBtn){
 	// coin toggle buttons
@@ -258,6 +261,9 @@ if(coinBtn){
 		if(!b) return;
 		coinBtns.forEach(x=>x.classList.remove('active'));
 		b.classList.add('active');
+		// move sliding indicator
+		const left = b.offsetLeft + 3; // small padding
+		coinToggleGroup.style.setProperty('--indicator-left', left + 'px');
 	});
 
 	coinBtn.addEventListener('click', ()=>{
@@ -345,7 +351,12 @@ function buy(id){
 shopList?.addEventListener('click', (e)=>{ const id = e.target.getAttribute('data-id'); if(id) buy(id); });
 renderShop(); renderInventory();
 
-if(shopBtn) shopBtn.addEventListener('click', ()=>{ shopPanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); statsPanel.classList.add('hidden'); });
+// initialize panels collapsed
+[guessPanel, statsPanel, shopPanel, coinPanel, roulettePanel].forEach(p=>{ if(p){ p.classList.add('collapsed'); p.style.height='0px'; } });
+// initialize coin toggle indicator
+if(coinBtns && coinBtns.length){ const active = document.querySelector('.coin-btn.active') || coinBtns[0]; active.classList.add('active'); const left = active.offsetLeft + 3; coinToggleGroup.style.setProperty('--indicator-left', left + 'px'); }
+
+if(shopBtn) shopBtn.addEventListener('click', ()=>{ if(shopPanel.classList.contains('expanded')) hidePanel(shopPanel); else { showPanel(shopPanel); hidePanel(guessPanel); hidePanel(statsPanel); hidePanel(roulettePanel); hidePanel(coinPanel); } });
 
 function applyInventoryOnWin(payout){
 	if(inventory['boost1']>0){
