@@ -11,6 +11,7 @@ const symbols = ['🍒','🍋','🔔','⭐','🍇'];
 const reels = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
 const creditsEl = document.getElementById('money');
 const betEl = document.getElementById('bet'); // now a number input
+const allInBtn = document.getElementById('allInBtn');
 const spinBtn = document.getElementById('spinBtn');
 const autoBtn = document.getElementById('autoBtn');
 const messageEl = document.getElementById('message');
@@ -364,4 +365,11 @@ function applyInventoryOnWin(payout){
 		return payout*2;
 	}
 	return payout;
+}
+
+if(allInBtn){
+	allInBtn.addEventListener('click', ()=>{
+		const v = Math.max(1, Math.floor(money));
+		betEl.value = v;
+	});
 }
