@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Slot Machine</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b1220'/%3E%3Ctext x='50' y='55' font-size='50' text-anchor='middle' fill='%23fff'%3E%F0%9F%8D%92%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+    <main class="wrap">
+        <div class="toolbar">
+            <button id="themeBtn" class="ghost">Toggle Theme</button>
+            <button id="statsBtn" class="ghost">Stats</button>
+            <button id="guessBtn" class="ghost">Guess Game</button>
+            <button id="shopBtn" class="ghost">Shop</button>
+        </div>
+        <h1>Slot Machine</h1>
+        <div class="machine">
+            <div class="reel" id="reel0">🍒</div>
+            <div class="reel" id="reel1">🍋</div>
+            <div class="reel" id="reel2">🔔</div>
+        </div>
+
+        <div class="controls">
+            <div class="credits">Credits: <span id="credits">100</span></div>
+            <div class="bet">Bet:
+                <select id="bet">
+                    <option value="1">1</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="spinBtn" class="primary">SPIN</button>
+            <button id="autoBtn" class="ghost">AUTO</button>
+        </div>
+
+        <div id="message" class="message">Good luck!</div>
+
+        <footer class="help">- symbols: 🍒 🍋 🔔 ⭐ 🍇 -</footer>
+        
+        <!-- Guess game panel -->
+        <section id="guessPanel" class="panel hidden">
+            <h2>Guess the Number (1-10)</h2>
+            <input id="guessInput" type="number" min="1" max="10" placeholder="Enter 1-10">
+            <button id="guessPlay" class="primary">Guess</button>
+            <div id="guessResult" class="message"></div>
+        </section>
+
+        <!-- Stats panel -->
+        <section id="statsPanel" class="panel hidden">
+            <h2>Stats</h2>
+            <div>Total spins: <span id="statSpins">0</span></div>
+            <div>Wins: <span id="statWins">0</span></div>
+            <div>Losses: <span id="statLosses">0</span></div>
+            <button id="resetStats" class="ghost">Reset Stats</button>
+        </section>
+
+        <!-- Shop panel -->
+        <section id="shopPanel" class="panel hidden">
+            <h2>Shop</h2>
+            <div id="shopList"></div>
+            <h3>Your inventory</h3>
+            <div id="inventory">(empty)</div>
+        </section>
+    </main>
+
+    <script src="index.js" defer></script>
+</body>
+</html>
