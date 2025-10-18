@@ -25,11 +25,7 @@
         <div class="controls">
             <div class="credits">Money: <span id="money">10000</span>₩</div>
             <div class="bet">Bet:
-                <select id="bet">
-                    <option value="100">100</option>
-                    <option value="500">500</option>
-                    <option value="1000">1000</option>
-                </select>
+                <input id="bet" type="number" min="1" step="100" value="100" style="width:120px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--primary)">
             </div>
         </div>
 
@@ -54,10 +50,10 @@
         <section id="coinPanel" class="panel hidden">
             <h2>Coinflip</h2>
             <div>Choose heads or tails and place your bet</div>
-            <select id="coinChoice">
-                <option value="heads">Heads</option>
-                <option value="tails">Tails</option>
-            </select>
+            <div id="coinToggleGroup" class="coin-toggle">
+                <button data-choice="heads" class="coin-btn active">Heads</button>
+                <button data-choice="tails" class="coin-btn">Tails</button>
+            </div>
             <button id="coinPlay" class="primary">Flip</button>
             <div id="coinResult" class="message"></div>
         </section>

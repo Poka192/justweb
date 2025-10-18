@@ -10,7 +10,7 @@ console.log('casino demo loaded');
 const symbols = ['🍒','🍋','🔔','⭐','🍇'];
 const reels = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
 const creditsEl = document.getElementById('money');
-const betEl = document.getElementById('bet');
+const betEl = document.getElementById('bet'); // now a number input
 const spinBtn = document.getElementById('spinBtn');
 const autoBtn = document.getElementById('autoBtn');
 const messageEl = document.getElementById('message');
@@ -34,7 +34,9 @@ function evaluate(a,b,c,bet){
 }
 
 async function spin(){
-	const bet = Number(betEl.value);
+	let bet = Number(betEl.value);
+	if(!Number.isFinite(bet) || bet<=0){ messageEl.textContent='Enter a valid bet amount'; return; }
+	bet = Math.floor(bet);
 	if(bet>money) { messageEl.textContent='Not enough money'; return; }
 	// take bet temporarily
 	money -= bet;
@@ -231,7 +233,8 @@ if(guessPlay){
 
 // --- Coinflip implementation ---
 const coinBtn = document.getElementById('coinPlay');
-const coinChoice = document.getElementById('coinChoice');
+const coinToggleGroup = document.getElementById('coinToggleGroup');
+const coinBtns = document.querySelectorAll('.coin-btn');
 const coinResult = document.getElementById('coinResult');
 const coinPanel = document.getElementById('coinPanel');
 
@@ -249,12 +252,24 @@ document.getElementById('coinToggle').addEventListener('click', ()=>{ coinPanel.
 document.getElementById('rouletteToggle').addEventListener('click', ()=>{ roulettePanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); statsPanel.classList.add('hidden'); shopPanel.classList.add('hidden'); });
 
 if(coinBtn){
+	// coin toggle buttons
+	coinToggleGroup?.addEventListener('click', (e)=>{
+		const b = e.target.closest('.coin-btn');
+		if(!b) return;
+		coinBtns.forEach(x=>x.classList.remove('active'));
+		b.classList.add('active');
+	});
+
 	coinBtn.addEventListener('click', ()=>{
-		const bet = Number(betEl.value);
+		let bet = Number(betEl.value);
+		if(!Number.isFinite(bet) || bet<=0){ coinResult.textContent='Enter a valid bet amount'; return; }
+		bet = Math.floor(bet);
 		if(bet>money){ coinResult.textContent='Not enough money'; return; }
 		money -= bet; updateCredits();
-		const pick = coinChoice.value; const flip = Math.random()<0.5?'heads':'tails';
-		if(pick===flip){ const win = bet*2; money += bet + (win-bet); coinResult.textContent = `Flip: ${flip}. You won ${win-bet}!`; } else { coinResult.textContent = `Flip: ${flip}. You lost ${bet}.`; }
+		const active = document.querySelector('.coin-btn.active');
+		const pick = active ? active.getAttribute('data-choice') : 'heads';
+		const flip = Math.random()<0.5?'heads':'tails';
+		if(pick===flip){ const win = bet*2; money += bet + win; coinResult.textContent = `Flip: ${flip}. You won ${win}!`; } else { coinResult.textContent = `Flip: ${flip}. You lost ${bet}.`; }
 		updateCredits();
 	});
 }
