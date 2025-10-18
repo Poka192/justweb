@@ -15,7 +15,7 @@
             <button id="guessBtn" class="ghost">Guess Game</button>
             <button id="shopBtn" class="ghost">Shop</button>
         </div>
-        <h1>Slot Machine</h1>
+        <h1>Casino Games</h1>
         <div class="machine">
             <div class="reel" id="reel0">🍒</div>
             <div class="reel" id="reel1">🍋</div>
@@ -23,12 +23,12 @@
         </div>
 
         <div class="controls">
-            <div class="credits">Credits: <span id="credits">100</span></div>
+            <div class="credits">Money: <span id="money">10000</span>₩</div>
             <div class="bet">Bet:
                 <select id="bet">
-                    <option value="1">1</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
                 </select>
             </div>
         </div>
@@ -48,6 +48,26 @@
             <input id="guessInput" type="number" min="1" max="10" placeholder="Enter 1-10">
             <button id="guessPlay" class="primary">Guess</button>
             <div id="guessResult" class="message"></div>
+        </section>
+
+        <!-- Coinflip panel -->
+        <section id="coinPanel" class="panel hidden">
+            <h2>Coinflip</h2>
+            <div>Choose heads or tails and place your bet</div>
+            <select id="coinChoice">
+                <option value="heads">Heads</option>
+                <option value="tails">Tails</option>
+            </select>
+            <button id="coinPlay" class="primary">Flip</button>
+            <div id="coinResult" class="message"></div>
+        </section>
+
+        <!-- Roulette panel -->
+        <section id="roulettePanel" class="panel hidden">
+            <h2>Roulette (Pick 0-9)</h2>
+            <input id="rouletteInput" type="number" min="0" max="9" placeholder="0-9">
+            <button id="roulettePlay" class="primary">Spin Roulette</button>
+            <div id="rouletteResult" class="message"></div>
         </section>
 
         <!-- Stats panel -->

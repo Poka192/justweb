@@ -1,24 +1,24 @@
 /*
-	Slot machine demo
+	Casino demo
 	- spin logic
-	- credits, bet, payout calculation
+	- money, bet, payout calculation
 	- auto-spin toggle
 */
 
-console.log('slot machine loaded');
+console.log('casino demo loaded');
 
 const symbols = ['🍒','🍋','🔔','⭐','🍇'];
 const reels = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
-const creditsEl = document.getElementById('credits');
+const creditsEl = document.getElementById('money');
 const betEl = document.getElementById('bet');
 const spinBtn = document.getElementById('spinBtn');
 const autoBtn = document.getElementById('autoBtn');
 const messageEl = document.getElementById('message');
 
-let credits = 100;
+let money = Number(localStorage.getItem('demo.money') || 10000);
 let auto = false;
 
-function updateCredits(){ creditsEl.textContent = credits; }
+function updateCredits(){ creditsEl.textContent = money; localStorage.setItem('demo.money', String(money)); }
 
 function randomSymbol(){ return symbols[Math.floor(Math.random()*symbols.length)]; }
 
@@ -35,9 +35,9 @@ function evaluate(a,b,c,bet){
 
 async function spin(){
 	const bet = Number(betEl.value);
-	if(bet>credits) { messageEl.textContent='Not enough credits'; return; }
+	if(bet>money) { messageEl.textContent='Not enough money'; return; }
 	// take bet temporarily
-	credits -= bet;
+	money -= bet;
 	updateCredits();
 	messageEl.textContent='Spinning...';
 
@@ -70,7 +70,7 @@ async function spin(){
 	if(payout>0){
 		// apply inventory effects (may modify payout)
 		payout = applyInventoryOnWin ? applyInventoryOnWin(payout) : payout;
-		credits += bet + payout; // give back bet + win
+		money += bet + payout; // give back bet + win
 		messageEl.textContent = `You won ${payout}!`;
 	} else {
 		messageEl.textContent = `You lost ${bet}.`;
@@ -78,7 +78,7 @@ async function spin(){
 	updateCredits();
 
 	// auto mode
-	if(auto && credits>0) setTimeout(spin, 600);
+	if(auto && money>0) setTimeout(spin, 600);
 }
 
 spinBtn.addEventListener('click', ()=>{ if(!auto) spin(); });
@@ -199,10 +199,10 @@ function recordSpin(win){ stats.spins += 1; if(win) stats.wins +=1; else stats.l
 // hook into spin evaluation by wrapping original evaluate result
 const originalSpin = spin;
 spin = async function(){
-	const beforeCredits = credits;
+	const beforeMoney = money;
 	await originalSpin();
-	const afterCredits = credits;
-	recordSpin(afterCredits>beforeCredits);
+	const afterMoney = money;
+	recordSpin(afterMoney>beforeMoney);
 };
 
 if(resetStats) resetStats.addEventListener('click', ()=>{ stats={spins:0,wins:0,losses:0}; saveStats(); });
@@ -225,7 +225,53 @@ if(guessPlay){
 		const val = Number(guessInput.value);
 		if(!val || val<1 || val>10){ guessResult.textContent='Enter number 1-10'; return; }
 		const target = Math.floor(Math.random()*10)+1;
-		if(val===target){ guessResult.textContent = `Correct! It was ${target}. You win 20 credits.`; credits += 20; updateCredits(); } else { guessResult.textContent = `Wrong. It was ${target}. Try again.`; }
+	if(val===target){ guessResult.textContent = `Correct! It was ${target}. You win 2000₩.`; money += 2000; updateCredits(); } else { guessResult.textContent = `Wrong. It was ${target}. Try again.`; }
+	});
+}
+
+// --- Coinflip implementation ---
+const coinBtn = document.getElementById('coinPlay');
+const coinChoice = document.getElementById('coinChoice');
+const coinResult = document.getElementById('coinResult');
+const coinPanel = document.getElementById('coinPanel');
+
+const roulettePanel = document.getElementById('roulettePanel');
+const rouletteInput = document.getElementById('rouletteInput');
+const rouletteResult = document.getElementById('rouletteResult');
+const rouletteBtn = document.getElementById('roulettePlay');
+
+// show coin/roulette panels via shop buttons area (reuse shopBtn as menu toggle)
+const gamesMenu = document.createElement('div');
+gamesMenu.style.marginTop = '8px';
+gamesMenu.innerHTML = `<button id="coinToggle" class="ghost">Coinflip</button> <button id="rouletteToggle" class="ghost">Roulette</button>`;
+document.querySelector('.toolbar').appendChild(gamesMenu);
+document.getElementById('coinToggle').addEventListener('click', ()=>{ coinPanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); statsPanel.classList.add('hidden'); shopPanel.classList.add('hidden'); });
+document.getElementById('rouletteToggle').addEventListener('click', ()=>{ roulettePanel.classList.toggle('hidden'); guessPanel.classList.add('hidden'); statsPanel.classList.add('hidden'); shopPanel.classList.add('hidden'); });
+
+if(coinBtn){
+	coinBtn.addEventListener('click', ()=>{
+		const bet = Number(betEl.value);
+		if(bet>money){ coinResult.textContent='Not enough money'; return; }
+		money -= bet; updateCredits();
+		const pick = coinChoice.value; const flip = Math.random()<0.5?'heads':'tails';
+		if(pick===flip){ const win = bet*2; money += bet + (win-bet); coinResult.textContent = `Flip: ${flip}. You won ${win-bet}!`; } else { coinResult.textContent = `Flip: ${flip}. You lost ${bet}.`; }
+		updateCredits();
+	});
+}
+
+// roulette: pick number 0-9, payout 9x for exact match, 2x for same parity
+if(rouletteBtn){
+	rouletteBtn.addEventListener('click', ()=>{
+		const bet = Number(betEl.value);
+		const pick = Number(rouletteInput.value);
+		if(isNaN(pick) || pick<0 || pick>9){ rouletteResult.textContent='Pick 0-9'; return; }
+		if(bet>money){ rouletteResult.textContent='Not enough money'; return; }
+		money -= bet; updateCredits();
+		const outcome = Math.floor(Math.random()*10);
+		if(outcome===pick){ const win = bet*9; money += bet + win; rouletteResult.textContent = `Ball: ${outcome}. Exact! You won ${win}!`; }
+		else if((outcome%2)===(pick%2)){ const win = bet*2; money += bet + win; rouletteResult.textContent = `Ball: ${outcome}. Same parity — you won ${win-bet}!`; }
+		else { rouletteResult.textContent = `Ball: ${outcome}. You lost ${bet}.`; }
+		updateCredits();
 	});
 }
 
@@ -245,9 +291,9 @@ const shopList = document.getElementById('shopList');
 const inventoryEl = document.getElementById('inventory');
 
 const shopItems = [
-	{id:'boost1', name:'Double next win', price:30, desc:'Doubles payout for your next win'},
-	{id:'free5', name:'Free 5 credits', price:20, desc:'Instant +5 credits'},
-	{id:'autoBoost', name:'Auto spin speed', price:50, desc:'Faster auto spins (cosmetic)'}
+	{id:'boost1', name:'Double next win', price:3000, desc:'Doubles payout for your next win'},
+	{id:'free5', name:'Free 500₩', price:2000, desc:'Instant +500₩'},
+	{id:'autoBoost', name:'Auto spin speed', price:5000, desc:'Faster auto spins (cosmetic)'}
 ];
 
 let inventory = JSON.parse(localStorage.getItem('demo.inv')||'{}');
@@ -258,7 +304,7 @@ function renderShop(){
 	shopItems.forEach(it=>{
 		const div = document.createElement('div');
 		div.className='shop-item';
-		div.innerHTML = `<div><strong>${it.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.6)">${it.desc}</div></div><div><span style="margin-right:8px">${it.price}¢</span><button data-id="${it.id}">Buy</button></div>`;
+		div.innerHTML = `<div><strong>${it.name}</strong><div style="font-size:12px;color:rgba(255,255,255,0.6)">${it.desc}</div></div><div><span style="margin-right:8px">${it.price}₩</span><button data-id="${it.id}">Buy</button></div>`;
 		shopList.appendChild(div);
 	});
 }
@@ -272,13 +318,13 @@ function renderInventory(){
 function buy(id){
 	const item = shopItems.find(s=>s.id===id);
 	if(!item) return;
-	if(credits < item.price){ messageEl.textContent='Not enough credits to buy'; return; }
-	credits -= item.price; updateCredits();
+	if(money < item.price){ messageEl.textContent='Not enough money to buy'; return; }
+	money -= item.price; updateCredits();
 	inventory[id] = (inventory[id]||0)+1;
 	localStorage.setItem('demo.inv', JSON.stringify(inventory));
 	renderInventory();
 	messageEl.textContent = `Purchased ${item.name}`;
-	if(id==='free5'){ credits +=5; updateCredits(); }
+	if(id==='free5'){ money +=500; updateCredits(); }
 }
 
 shopList?.addEventListener('click', (e)=>{ const id = e.target.getAttribute('data-id'); if(id) buy(id); });
